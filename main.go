@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"startup/auth"
 	"startup/handler"
 	"startup/user"
 
@@ -20,9 +21,11 @@ func main() {
 
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
-	userService.SaveAvatar(1, "images/1-profile.png")
+	authService := auth.NewService()
 
-	userHandler := handler.NewUserHandler(userService)
+	// fmt.Println(authService.GenerateToken(1001))
+
+	userHandler := handler.NewUserHandler(userService, authService)
 	router := gin.Default()
 	api := router.Group("/api/v1")
 	api.POST("/users", userHandler.RegisterUser)
