@@ -1,0 +1,72 @@
+[1mdiff --git a/campaign/entity.go b/campaign/entity.go[m
+[1mindex f972025..d3a8512 100644[m
+[1m--- a/campaign/entity.go[m
+[1m+++ b/campaign/entity.go[m
+[36m@@ -4,7 +4,7 @@[m [mimport "time"[m
+ [m
+ type Campaign struct {[m
+ 	ID               int[m
+[31m-	userID           int[m
+[32m+[m	[32mUserID           int[m
+ 	Name             string[m
+ 	ShortDescription string[m
+ 	Description      string[m
+[1mdiff --git a/campaign/formatter.go b/campaign/formatter.go[m
+[1mindex 1db1c4a..d678cb8 100644[m
+[1m--- a/campaign/formatter.go[m
+[1m+++ b/campaign/formatter.go[m
+[36m@@ -1 +1,39 @@[m
+[31m-package campaign[m
+\ No newline at end of file[m
+[32m+[m[32mpackage campaign[m
+[32m+[m
+[32m+[m[32mtype CampaignFormatter struct {[m
+[32m+[m	[32mID               int    `json:"id"`[m
+[32m+[m	[32mUserID           int    `json:"user_id"`[m
+[32m+[m	[32mName             string `json:"name"`[m
+[32m+[m	[32mShortDescription string `json:"short_description"`[m
+[32m+[m	[32mImageUrl         string `json:"image_url"`[m
+[32m+[m	[32mGoalAmount       int    `json:"goal_amount"`[m
+[32m+[m	[32mCurrentAmount    int    `json:"current_amount"`[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mfunc FormatCampaign(campaign Campaign) CampaignFormatter {[m
+[32m+[m	[32mcampaignFormatter := CampaignFormatter{}[m
+[32m+[m	[32mcampaignFormatter.ID = campaign.ID[m
+[32m+[m	[32mcampaignFormatter.UserID = campaign.UserID[m
+[32m+[m	[32mcampaignFormatter.Name = campaign.Name[m
+[32m+[m	[32mcampaignFormatter.ShortDescription = campaign.ShortDescription[m
+[32m+[m	[32mcampaignFormatter.GoalAmount = campaign.GoalAmount[m
+[32m+[m	[32mcampaignFormatter.CurrentAmount = campaign.CurrentAmount[m
+[32m+[m	[32mcampaignFormatter.ImageUrl = ""[m
+[32m+[m	[32mif len(campaign.CampaignImages) > 0 {[m
+[32m+[m		[32mcampaignFormatter.ImageUrl = campaign.CampaignImages[0].FileName[m
+[32m+[m	[32m}[m
+[32m+[m	[32mreturn campaignFormatter[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mfunc FormatCampaigns(campaigns []Campaign) []CampaignFormatter {[m
+[32m+[m	[32mif len(campaigns) == 0 {[m
+[32m+[m		[32mreturn []CampaignFormatter{}[m
+[32m+[m	[32m}[m
+[32m+[m	[32mvar campaignsFormatter []CampaignFormatter[m
+[32m+[m
+[32m+[m	[32mfor _, campaign := range campaigns {[m
+[32m+[m		[32mcampaignFormatter := FormatCampaign(campaign)[m
+[32m+[m		[32mcampaignsFormatter = append(campaignsFormatter, campaignFormatter)[m
+[32m+[m	[32m}[m
+[32m+[m	[32mreturn campaignsFormatter[m
+[32m+[m[32m}[m
+[1mdiff --git a/handler/campaign.go b/handler/campaign.go[m
+[1mindex 64884da..a674191 100644[m
+[1m--- a/handler/campaign.go[m
+[1m+++ b/handler/campaign.go[m
+[36m@@ -30,7 +30,7 @@[m [mfunc (h *campaignHandler) GetCampaigns(c *gin.Context) {[m
+ 		c.JSON(http.StatusBadRequest, response)[m
+ 		return[m
+ 	}[m
+[31m-	response := helper.ApiResponse("List Of Campaigns", http.StatusOK, "success", campaigns)[m
+[32m+[m	[32mresponse := helper.ApiResponse("List Of Campaigns", http.StatusOK, "success", campaign.FormatCampaigns(campaigns))[m
+ 	c.JSON(http.StatusOK, response)[m
+ [m
+ }[m
