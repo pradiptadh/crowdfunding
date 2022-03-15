@@ -34,3 +34,8 @@ func (h *campaignHandler) GetCampaigns(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 
 }
+func (h *campaignHandler) GetCampaign(c *gin.Context){
+	//handler : mapping id yang di url ke struck input -> service, call formatter
+	//service : input struck input -> menangkap id di url, manggil repo
+	//repository : get campaign by id
+}
